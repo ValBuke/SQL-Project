@@ -1,0 +1,983 @@
+SELECT SUM(Value) FROM milk_production WHERE Year = 2023;
+SELECT Year,SUM(Value) FROM coffee_production GROUP BY Year;
+SELECT Year,AVG(Value) FROM honey_production GROUP BY Year;
+SELECT State_ANSI FROM state_lookup WHERE State='FLORIDA';
+SELECT State_ANSI FROM cheese_production WHERE Year=2023 AND Period='APR' HAVING Value>100000000;
+
+SELECT s.State, c.Value
+FROM state_lookup s
+LEFT JOIN cheese_production c ON s.State_ANSI = c.State_ANSI AND c.Year = 2023 AND c.Period = 'APR';
+SELECT * FROM state_lookup;
+
+SELECT s.State
+FROM state_lookup s
+LEFT JOIN milk_production m ON s.State_ANSI = m.State_ANSI AND m.Year = 2023
+WHERE m.State_ANSI IS NULL;
+
+SELECT s.State, c.Value
+FROM state_lookup s
+LEFT JOIN cheese_production c ON s.State_ANSI = c.State_ANSI AND c.Year = 2023 AND c.Period = 'APR';
+PRAGMA table_info (coffee_production);
+SELECT Period FROM pragma_table_info(coffee_production) LIMIT 1;
+SELECT * FROM chinook.albums;
+/*This script is exploring employees
+Date written:23/7/2024
+Email: valerywafula@gmail.com*/
+SELECT * 
+FROM chinook.employees 
+LIMIT 5; --viewing data
+CREATE TABLE albums (
+AlbumId INTEGER PRIMARY KEY,
+Title Text,
+ArtistId INTEGER
+);
+CREATE TABLE employees (
+EmployeeeId INTEGER PRIMARY KEY,
+Name TEXT NOT NULL,
+Email TEXT UNIQUE,
+Age INTEGER CHECK(Age >=18),
+DepartmentId INTEGER,
+FOREIGN KEY (DepartmentId) REFERENCES departments (DepartmentId)
+);
+CREATE TABLE Black_Actresses (
+Id INTEGER PRIMARY KEY,
+Name TEXT NOT NULL,
+BirthDate TEXT,
+Awards INTEGER DEFAULT 0
+);
+INSERT INTO Black_Actresses (Id,Name,BirthDate,Awards)
+VALUES (1001,'Viola Davis','1965-08-11',1),
+        (2002,'Lupita Nyongo','1983-03-01',1);
+        SELECT * FROM Black_Actresses;
+SELECT * FROM  employees;
+SELECT DISTINCT Title FROM  employees;
+SELECT FirstName,LastName,Country FROM customers;
+SELECT FirstName AS 'First Name' ,LastName AS 'Last Name' FROM customers;
+--Looking at the artist table
+SELECT * FROM artists;
+SELECT DISTINCT Country FROM customers;
+SELECT  CustomerId AS 'ID',FirstName,LastName FROM customers;
+--1.Select unique cities from the customers table
+SELECT DISTINCT City FROM customers;
+/*2.Select the company column and rename it as 'co' from the customers table*/
+SELECT Company AS 'Co' FROM customers;
+--STEP 1:Creating a Disney Pixar Film Table
+CREATE TABLE pixar_films (
+film_id INTEGER PRIMARY KEY AUTOINCREMENT,
+film_title TEXT NOT NULL,
+release_year INTEGER NOT NULL CHECK (release_year>=1995),
+director TEXT,
+tomatoes_score INTEGER CHECK ( tomatoes_score BETWEEN 0 AND 100)
+);
+SELECT * FROM  pixar_films;
+--STEP 2:Insert data
+INSERT INTO pixar_films (film_title,release_year,director,tomatoes_score)
+VALUES  ('Toy Story', 1995, 'John Lasseter', 100),
+        ('Finding Nemo', 2003, 'Andrew Stanton', 99),
+        ('Inside Out', 2015, 'Pete Docter', 98),
+        ('Ratatouille', 2007, 'Brad Bird', 96),
+        ('Coco', 2017, 'Lee Unkrich', 97);
+--STEP 3:Select everything 
+SELECT * FROM  pixar_films;
+--STEP 4:Select unique release_years
+SELECT DISTINCT release_year FROM  pixar_films;
+--STEP 5:Rename film_title to Title and release_year to Year
+SELECT  film_title AS  'Title', release_year AS 'Year' FROM  pixar_films;
+SELECT * FROM   tracks WHERE Composer=1;
+SELECT  Composer FROM   tracks WHERE Composer='AC/DC';
+--AND
+SELECT * 
+FROM   tracks 
+WHERE GenreId=1 AND UnitPrice<1.00;        
+--OR
+SELECT * 
+FROM   tracks 
+WHERE GenreId=1 OR Milliseconds>300000;
+--Logical Operator NOT
+SELECT *
+FROM customers
+WHERE Country IS NOT 'Brazil';
+--Is Equal To
+SELECT *
+FROM customers
+WHERE Country != 'Brazil';
+--IN
+SELECT *
+FROM customers
+WHERE City IN ('New York','Los Angeles','Chicago');
+--LIKE
+SELECT * 
+FROM   tracks 
+WHERE Name LIKE '%Zeppelin%';
+/* Q1 Filter for all customers in Prague*/
+SELECT *
+FROM customers
+WHERE City = 'Prague';
+/* Q2 Filter for all customers in Prague or New York*/
+SELECT *
+FROM customers
+WHERE City = 'Prague' OR City = 'New York';
+/* Q3 Filter for all customers who do not have a missing fax number*/
+SELECT *
+FROM customers
+WHERE Fax != 'NULL' ;
+/* Q4 Filter for all customers in the following states: NY,CA,WI,TX*/
+SELECT *
+FROM customers
+WHERE State IN ('NY','CA','WI','TX');
+/* Q5 Filter for all customers who have the word 'yahoo'anywhere in their email*/
+SELECT * 
+FROM   customers 
+WHERE Email LIKE '%yahoo%';
+/*Take home practice using 'invoices' table*/
+--1.Filter for total bills more than 10.00
+SELECT * 
+FROM   invoices
+WHERE Total>10.00; 
+--2.Filter for customers in USA or Canada
+SELECT *
+FROM invoices
+WHERE BillingCountry = 'USA' OR BillingCountry = 'Canada';
+--3.Filter for all addresses that may contain 'Street'
+SELECT * 
+FROM   invoices 
+WHERE BillingAddress LIKE '%Street%';
+/*Sort the invoices table to get the most recent purchase dates listed first*/
+ SELECT *
+ FROM  invoices
+ ORDER BY InvoiceDate DESC;
+ /*Sort the invoices table by highest total then the State in alphebetical order filter by USA*/
+ SELECT InvoiceId,CustomerId,InvoiceDate,Total,BillingState AS State
+ FROM  invoices
+ WHERE BillingCountry='USA'
+ ORDER BY Total DESC, State;
+UPDATE pixar_films
+SET film_title = 'Finding Nemo (Special Edition)'
+WHERE film_title = 'Finding Nemo';
+UPDATE pixar_films
+SET film_title = "A Bug's Life",tomatoes_score = 92
+WHERE film_id = 1;
+DELETE FROM pixar_films
+WHERE film_title = 'Inside Out';
+SELECT *
+FROM pixar_films;
+ALTER TABLE pixar_films
+ADD COLUMN runtime_minutes INTEGER;
+ALTER TABLE pixar_films
+DROP COLUMN CLOLUMN;
+ALTER TABLE pixar_films
+RENAME COLUMN director TO 'director_name';
+/*Q1 get the total invoice amount for California*/
+SELECT SUM (Total) AS InvoiceTotal
+FROM invoices
+WHERE BillingState = 'CA';
+/*Q2 get the count invoices from NY*/
+SELECT COUNT (InvoiceId) AS NUM_NY_Invoices
+FROM invoices
+WHERE BillingState = 'NY';
+/*Q3 get the count invoices broken out by state--new concept*/
+SELECT BillingState,COUNT (*) AS NUM__Invoices
+FROM invoices
+GROUP BY BillingState;
+SELECT AlbumId ,COUNT (*) AS Numberoftracks
+FROM tracks
+GROUP BY AlbumId;
+SELECT AlbumId ,COUNT (*) AS Numberoftracks
+FROM tracks
+GROUP BY AlbumId
+HAVING COUNT (*) > 10;
+/*Return the total amount each customer has spent on invoices in total*/
+SELECT CustomerId, SUM (Total) AS TotalAmount
+FROM invoices
+GROUP BY CustomerId;
+ORDER BY TotalSpent DESC;
+/*Return the total amount each customer has spent on invoices only if the customer has spent more than 25*/
+SELECT CustomerId, SUM (Total) AS TotalSpent
+FROM invoices
+GROUP BY CustomerId
+HAVING SUM (Total)>25;
+/*Return the total amount each customer has spent on invoices only if the customer has spent more than 40*/
+SELECT CustomerId, SUM (Total) AS TotalSpent
+FROM invoices
+GROUP BY CustomerId
+HAVING TotalSpent>40;
+/*Return the total amount each customer has spent on invoices only if the customer has spent more than 25--we only care about CA customers*/
+SELECT CustomerId,BillingState, SUM (Total) AS TotalSpent
+FROM invoices
+WHERE BillingState = 'CA'
+GROUP BY CustomerId
+HAVING TotalSpent>20;
+/*Identify Most Popular Genres Within those genres, find albums with the most tracks --these albums can play for a good length of the party just in case the DJ needs a break 
+   Filter out tracks that are less than 3 minutes long (180,000 ms) -- too short to dance to*/ 
+/*Identify Most Popular Genres*/
+SELECT GenreId, COUNT (*) AS Genrecount
+FROM tracks
+GROUP BY GenreId
+ORDER BY Genrecount DESC;---1(Rock),7(Latin),3(Metal)
+--SOPHISTICATED WAY
+SELECT Name,GenreId
+FROM genres
+WHERE GenreId IN (1,7,3);
+/*Within those genres, find albums with the most track*/
+SELECT AlbumId, COUNT (*) AS Track_Count, GenreId
+FROM tracks
+WHERE GenreId IN (1,7,3)
+GROUP BY AlbumId
+ORDER BY Track_Count DESC;---AlbumId 141,23,24
+/*Filter out tracks that are less than 3 minutes long (180,000 ms) -- too short to dance to*/ 
+SELECT AlbumId,Name,TrackId,Milliseconds
+FROM tracks
+WHERE AlbumId IN (141,23,24)
+GROUP BY TrackId
+HAVING Milliseconds>180000;
+
+--Inner Join
+SELECT t.Name AS TrackName,al.Title AS AlbumTitle
+FROM tracks t
+INNER JOIN albums al ON t.AlbumId = al.AlbumId;
+--Left Join
+SELECT al.Title AS AlbumTitle, ar.Name AS TrackName
+FROM albums al
+LEFT JOIN artists ar ON al.ArtistId = ar.ArtistId;
+--Right Join
+SELECT e.EmployeeId,e.FirstName || ' ' ||e.LastName AS EmployeeName
+FROM employees e
+LEFT JOIN invoices i ON e.EmployeeId=i.CustomerId;
+ 
+/* 1)  give a list of customers who have matching invoices.Return customerID,InvoiceID, InvoiceDate */ 
+SELECT c.CustomerId,i.InvoiceId,i.InvoiceDate
+FROM customers c
+INNER JOIN invoices i 
+ON c.CustomerId = i.CustomerId;
+
+/* 2) return all tracks regardless if they a part of an album or not return AlbumName,
+TrackName*/
+SELECT t.Name AS AlbumName,al.Title AS TrackName
+FROM tracks t
+LEFT JOIN albums al 
+ON t.AlbumId=al.AlbumId; 
+
+/* 3) return a list of all album titles and the names of the artists */ 
+SELECT al.Title,ar.Name
+FROM albums al
+LEFT JOIN artists ar
+ON al.ArtistId = ar.ArtistId;
+
+/*Select tracks (union all example)*/
+SELECT TrackId,Name AS TrackName
+FROM tracks
+UNION ALL
+--select tracks in playlists;
+SELECT playlist_track.TrackId,tracks.Name AS TrackName
+FROM playlist_track
+JOIN tracks 
+ON playlist_track.TrackId=tracks.TrackId
+WHERE PlaylistId=1
+ORDER BY TrackName;
+
+/* Q1 Retrieve album title,artist name,and track count for each album using ONE query. Hint:you will need to join 3 tables and use a GROUP BY clause */
+SELECT al.Title,ar.Name,COUNT (t.TrackId) 
+FROM albums al
+INNER JOIN artists ar 
+ON al.ArtistId = ar.ArtistId;
+
+SELECT al.Title,t.Name, COUNT (t.TrackId) 
+FROM albums al
+INNER JOIN tracks t
+ON al.AlbumId = t.AlbumId;
+
+--Solution
+SELECT al.Title,ar.Name,COUNT (t.TrackId) 
+FROM albums al
+INNER JOIN artists ar 
+ON al.ArtistId = ar.ArtistId
+INNER JOIN tracks t
+ON al.AlbumId = t.AlbumId
+GROUP BY Title;
+
+/*Q2 Retrieve a list of playlists with their associated tracks and genres*/
+SELECT pl.Name,t.Name,g.Name
+FROM playlists pl
+INNER JOIN playlist_track pt
+ON pl.PlaylistId = pt.PlaylistId
+INNER JOIN tracks t
+ON t.TrackId = pt.TrackId
+INNER JOIN genres g
+ON g.GenreId = t.GenreId;
+
+/*Return Album Titles and the Track count for the first ten records in the Albums table __use a subquery in the SELECT clause*/
+SELECT Title AS AlbumTitle
+FROM albums;
+
+SELECT COUNT (TrackId)
+FROM tracks
+LIMIT 10;
+
+SELECT Title AS AlbumTitle, COUNT (TrackId)
+FROM albums al
+INNER JOIN tracks t
+ON  al.AlbumId=t.AlbumId
+GROUP BY AlbumTitle
+LIMIT 10;
+
+--Solution
+SELECT 
+    Title AS AlbumTitle,
+    (SELECT COUNT (TrackId) FROM tracks
+     WHERE AlbumId=Albums.AlbumId) AS TrackCount
+FROM 
+    albums
+LIMIT 10;
+
+/*Return customer ID and Full Name for all customers who have made more than 5 invoices--use a subquery in the WHERE clause*/
+SELECT CustomerId,FirstName || ' '|| LastName AS CustomerName
+FROM customers;
+
+SELECT CustomerId,COUNT (InvoiceId) 
+FROM invoices
+GROUP BY CustomerId
+HAVING COUNT (InvoiceId)>5;
+
+SELECT CustomerId,FirstName || ' '|| LastName AS CustomerName,COUNT (InvoiceId) AS InvoiceCount
+FROM customers C
+JOIN invoices I
+ON c.CustomerId = i.CustomerId
+GROUP BY CustomerId
+HAVING COUNT (InvoiceId)>5;
+
+
+--Using CTEs (Common Table Expressions)
+WITH CustomerInvoiceCount AS (
+SELECT 
+    CustomerId,
+    COUNT (InvoiceId) AS Invoicecount
+FROM
+ invoices 
+GROUP BY 
+    CustomerId
+HAVING 
+    COUNT (InvoiceId)>5
+)   
+SELECT 
+c.CustomerId,
+c.FirstName || ' '|| c.LastName AS CustomerName
+FROM customers c
+JOIN 
+CustomerInvoicecount cic ON c.CustomerId=cic.CustomerId;
+
+ 
+--Solution
+SELECT 
+    CustomerId,
+    FirstName || ' '|| LastName AS CustomerName
+FROM customers
+WHERE CustomerId IN (SELECT CustomerId
+    FROM invoices
+    GROUP BY CustomerId
+    HAVING COUNT(InvoiceId) >5); 
+
+/* Return customer/id for all customers whose total invoice amount
+is greater than the avg invoice amt for all customers */
+--Solution 
+SELECT 
+    CustomerId,
+    FirstName || ' '|| LastName AS FullName
+FROM customers
+WHERE CustomerId IN (SELECT CustomerId
+    FROM invoices
+    GROUP BY CustomerId
+    HAVING SUM (Total) > (SELECT AVG (Total) FROM invoices));
+    
+--Using CTEs (Common Table Expressions)
+WITH CustomerTotals AS (
+    SELECT CustomerId,
+    SUM (Total) AS TotalSpent
+    FROM  invoices
+    GROUP BY CustomerId
+ ),
+AverageInvoiceTotal AS(
+SELECT AVG (Total) AS AvgTotal
+FROM  invoices
+)
+ 
+SELECT 
+c.CustomerId,
+c.FirstName || ' '|| c.LastName AS CustomerName
+FROM customers c
+JOIN 
+CustomerTotals ct 
+ON c.CustomerId=ct.CustomerId
+WHERE ct.TotalSpent> (SELECT AvgTotal FROM AverageInvoiceTotal);
+    
+/*Q1 Retrieve the names of all tracks along with each tracks genre name*/
+SELECT t. Name,g.Name 
+FROM tracks t
+INNER JOIN genres g
+ON t.GenreId = g.GenreId;
+
+/*Q2 Retrieve the names of all tracks from the album "Let There Be Rock*/  
+SELECT t. Name 
+FROM tracks t
+INNER JOIN albums al
+ON t.AlbumId = al.AlbumId
+WHERE al.Title = "Let There Be Rock";
+
+
+/*Q3 Find the total number of tracks for each ARTIST (need to join 3 tables)*/
+ SELECT COUNT (TrackId)
+ FROM albums al 
+ INNER JOIN tracks t 
+ ON al.AlbumId = t.AlbumId;
+ 
+ SELECT ar.Name
+ FROM  albums al
+ INNER JOIN artists ar
+ ON al.ArtistId = ar.ArtistId;
+ 
+ SELECT ar.Name,COUNT (TrackId)
+ FROM albums al 
+ INNER JOIN tracks t 
+ ON al.AlbumId = t.AlbumId
+ INNER JOIN artists ar
+ ON al.ArtistId = ar.ArtistId
+ GROUP BY ar.Name 
+ ORDER BY COUNT (TrackId) DESC;
+
+ /*Name of customers and employeees w/o duplicates*/
+SELECT FirstName ||' '||LastName AS CustomerName
+FROM  customers 
+UNION 
+SELECT FirstName ||' '||LastName AS EmployeeName
+FROM employees;
+
+--Solution
+SELECT FirstName,LastName 
+FROM  customers 
+UNION 
+SELECT FirstName,LastName 
+FROM employees;
+
+/*Name of customers and employeees with duplicates*/
+SELECT FirstName,LastName 
+FROM  customers 
+UNION ALL
+SELECT FirstName,LastName 
+FROM employees;
+
+/*Name of customers who are also employeees*/
+SELECT FirstName,LastName 
+FROM  customers 
+INTERSECT
+SELECT FirstName,LastName 
+FROM employees;
+
+/*Name of customers who are NOT employeees*/
+SELECT FirstName,LastName 
+FROM  customers 
+EXCEPT
+SELECT FirstName,LastName 
+FROM employees;
+
+--CTEs (Common Table Expressions)
+WITH Topcustomers AS(
+    SELECT CustomerId,FirstName,LastName,Country
+    FROM customers
+    WHERE Country = 'USA'
+)
+SELECT * FROM Topcustomers;
+
+/*All customer names (First and last) as well as the number of invoices each customer has*/
+ SELECT c.FirstName||' '||c.LastName AS CustomerName,Invoicounts.Invoicecount
+  FROM customers c
+  JOIN 
+  (SELECT CustomerId,COUNT(InvoiceId)
+    FROM invoices
+    GROUP BY CustomerId
+) AS Invoicecounts ON c.CustomerId = InvoiceCounts.CustomerId
+  WHERE Invoicounts.Invoicecount>5;
+  
+--Solution
+WITH Invoicecounts AS(
+    SELECT CustomerId,COUNT(InvoiceId) AS InvoiceCount
+    FROM invoices
+    GROUP BY CustomerId
+)
+SELECT c.FirstName,c.LastName,Invoicounts.Invoicecount
+FROM customers c
+JOIN Invoicecounts ON c.CustomerId = InvoiceCounts.CustomerId
+WHERE Invoicounts.Invoicecount>5;
+
+/*Combine multiple CTEs*/
+WITH Totalsales AS (
+SELECT CustomerId,SUM(Total) AS SalesAmount
+FROM invoices
+GROUP BY CustomerId
+), Topcustomers AS (
+SELECT CustomerId,FirstName,LastName
+FROM customers
+WHERE Country = 'USA'
+)
+SELECT Topcustomers.FirstName,Topcustomers.LastName,Totalsales.SalesAmount
+FROM Topcustomers
+JOIN Totalsales ON Topcustomers.CustomerId = Totalsales.CustomerId;
+
+/* Use a CTE to calculate the average track length per album */
+SELECT al.Title,AVG(Milliseconds)
+FROM tracks t
+JOIN albums al
+ON t.AlbumId=al.AlbumId
+GROUP BY al.AlbumId;
+
+--Solution
+WITH Tracklength AS(
+    SELECT AlbumId,AVG(Milliseconds) AS AvgTracklength
+    FROM tracks
+    GROUP BY AlbumId 
+)
+SELECT al.Title,Tracklength.AvgTracklength
+FROM albums al
+JOIN Tracklength
+ON al.AlbumId = Tracklength.AlbumId;
+
+/* Use two CTEs to get total sales for each USA customer */ 
+SELECT FirstName||' '||LastName AS CustomerNmame,SUM(Total)
+FROM invoices i
+JOIN customers c
+ON i.CustomerId = c.CustomerId
+WHERE Country = 'USA'
+GROUP BY CustomerNmame
+ORDER BY SUM(Total) DESC;
+
+
+--Solution
+WITH Totalsales AS (
+SELECT CustomerId,SUM(Total) AS SalesAmount
+FROM invoices
+GROUP BY CustomerId
+), Topcustomers AS (
+SELECT CustomerId,FirstName,LastName
+FROM customers
+WHERE Country = 'USA'
+)
+SELECT Topcustomers.FirstName,Topcustomers.LastName,Totalsales.SalesAmount
+FROM Topcustomers
+JOIN Totalsales ON Topcustomers.CustomerId = Totalsales.CustomerId
+ORDER BY Totalsales.SalesAmount DESC;
+
+/*CTEs Practice*/
+/*Select ALL Product Names & their Category Names*/
+SELECT p.product_name,c.category_name
+FROM products p
+JOIN categories c
+ON p.category_id = c.category_id;
+
+--Using CTEs
+WITH ProductCategories AS(
+  SELECT product_name,category_name
+  FROM products p
+  JOIN categories c 
+  ON p.category_id = c.category_id 
+ )
+SELECT * FROM ProductCategories;
+
+
+/*Select CustomerID and Each Customers Number of Orders.*/ 
+SELECT c.customer_id,COUNT (order_id) AS Totalorders
+FROM orders o
+JOIN customers c
+ON o.customer_id=c.customer_id
+GROUP BY c.customer_id;
+
+WITH CustomerOrders AS(
+  SELECT c.customer_id,COUNT (order_id) AS Totalorders
+  FROM orders o
+  JOIN customers c
+  ON o.customer_id=c.customer_id
+  GROUP BY c.customer_id
+ )
+ SELECT * FROM CustomerOrders
+ ORDER BY Totalorders DESC;
+
+/*Select the ProductName and the TOTAL Number of Orders for Each Product (only return products that have been ordered more than 50 times)*/
+SELECT product_name,SUM (quantity) AS OrderCount
+FROM order_details od
+JOIN products p
+ON od.product_id= p.product_id
+GROUP BY product_name
+ORDER BY OrderCount DESC;
+
+
+WITH ProductOrders AS(
+  SELECT product_name,SUM (quantity) AS OrderCount
+  FROM order_details od
+  JOIN products p
+  ON od.product_id= p.product_id
+  GROUP BY product_name
+  ORDER BY OrderCount DESC
+  )
+ SELECT * FROM ProductOrders
+ WHERE  OrderCount > 50;
+
+--Returns 25 rows
+SELECT BillingState,SUM(Total) AS TotalByState
+FROM invoices
+WHERE BillingState is not NULL
+GROUP BY BillingState;
+
+--Returns 210 rows
+SELECT BillingState,SUM(Total) 
+OVER (PARTITION BY BillingState)
+FROM invoices
+WHERE BillingState is not NULL;
+
+/*Return CustomerId,InvoiceId,Total,AND SUM of ALL the invoices the customer has had*/
+SELECT CustomerId,InvoiceId,SUM(Total) AS TotalSpentByCustomer
+FROM invoices
+GROUP BY CustomerId
+ORDER BY CustomerId;
+
+SELECT CustomerId,InvoiceId,Total,SUM(Total)
+OVER(PARTITION BY CustomerId ORDER BY InvoiceId) AS TotalSpentByCustomer  
+FROM invoices;
+
+--ROW-NUMBER assigns a unique sequential integer to rows within a partition
+SELECT
+AlbumId,
+TrackId,
+Name,
+ROW_NUMBER() OVER (PARTITION BY AlbumId ORDER BY Name) AS RowNumberofTrack
+FROM tracks;
+
+/*Return row level info about the length of tracks and a runningtotal of all tracks within one album*/
+SELECT AlbumId,TrackId,Name,Milliseconds,SUM(Milliseconds) AS Tracklength
+FROM tracks
+GROUP BY AlbumId;
+ 
+--Solution
+SELECT AlbumId,TrackId,Name,Milliseconds,SUM(Milliseconds)
+OVER(PARTITION BY AlbumId ORDER BY Name ) AS Tracklength
+FROM tracks;
+
+
+/*Use the row_number fx to assign a number to each track in an album
+the first number should be the longest track*/
+SELECT
+AlbumId,
+TrackId,
+Name,
+Milliseconds,
+ROW_NUMBER() OVER (PARTITION BY AlbumId ORDER BY Milliseconds DESC) AS RowNumberofTrack
+FROM tracks;
+
+--Window Functions
+--ROW_NUMBER  
+/*Assign a row_number to each customer's invoice.The invoice that has the amount should be numbered first*/
+SELECT 
+CustomerId,
+InvoiceId,
+Total,
+ROW_NUMBER() OVER(PARTITION BY CustomerId ORDER BY Total DESC) AS RowNumberTotal
+FROM invoices;
+
+/*Rank each invoice a customer has with a 1 for the highest invoice amount.
+Invoices with the same amount should be ranked the same number*/
+SELECT 
+CustomerId,
+InvoiceId,
+Total,
+RANK() OVER(PARTITION BY CustomerId ORDER BY Total DESC) AS RowNumberTotal
+FROM invoices;
+  
+/*Rank each invoice a customer has with a 1 for the highest invoice amount.
+Invoices with the same amount should be ranked the same number
+and the invoice after should be the next sequential number*/
+SELECT 
+CustomerId,
+InvoiceId,
+Total,
+DENSE_RANK() OVER(PARTITION BY CustomerId ORDER BY Total DESC) AS RowNumberTotal
+FROM invoices;
+
+/*Lag each customer's invoice total by 1*/
+SELECT 
+CustomerId,
+InvoiceId,
+Total,
+LAG(Total,1,0) OVER(PARTITION BY CustomerId ORDER BY InvoiceId) AS Prev_total
+FROM invoices;
+
+
+--String Functions
+--LENGTH()
+SELECT 
+    FirstName, 
+    LENGTH (FirstName) AS NameLength 
+FROM customers;
+
+--UPPER()/LOWER()
+SELECT 
+    FirstName, 
+    UPPER (FirstName) AS UpperName, 
+   LOWER (FirstName) AS LowerrName 
+FROM customers;
+
+--SUBSTR()
+SELECT 
+    FirstName, 
+    SUBSTR (FirstName,1,3) AS Substring 
+FROM customers;
+
+--TRIM()
+SELECT 
+    FirstName, 
+   TRIM (FirstName) AS TrimmedName
+FROM customers;
+
+/*Exercise*/
+SELECT EmployeeId,LENGTH(Phone) AS Phone_Len,Phone
+FROM employees;
+
+SELECT EmployeeId,LENGTH(Phone) AS Phone_Len,Phone,TRIM(Phone,'+') AS Trim_Phone
+FROM employees;
+
+SELECT EmployeeId,LENGTH(Phone) AS Phone_Len,Phone,TRIM(Phone,'+') AS Trim_Phone,UPPER(LastName) AS Upper_name
+FROM employees;
+
+/*Write a query to find the length of the album titles in
+the albums table.Display the album title and its length*/
+SELECT Title,
+LENGTH(Title) AS Title_Length
+FROM albums;
+
+/*Writea query to rank customers based on the total amount they have spent.
+Use the ROW_NUMBER window function to assisgn a unique rank to each customer
+Display the customer ID,total amount spent,and their rank */
+SELECT 
+CustomerId,
+InvoiceId,
+Total,
+SUM(Total),
+ROW_NUMBER () OVER ( ORDER BY SUM(Total) DESC)  AS RowNumberTotal,
+RANK()OVER ( ORDER BY SUM(Total) DESC)  AS RankTotal
+FROM invoices
+GROUP BY CustomerId;
+
+/*Write a query to create a list of tracks with their album titles and artist names in uppercase,trimmed,and substringed
+to show only the first 10 characters. Also,include the rank of each track within its album
+based on the trackId.Use the RANK window function for ranking*/
+SELECT 
+al.Title,
+Name,
+TrackId,
+UPPER (Name) AS UpperName,
+TRIM (Name) AS TrimmedName,
+SUBSTR (Name,1,10) AS Substring
+FROM tracks t
+JOIN albums al
+ON t.AlbumId = al.AlbumId
+JOIN artists ar
+ON t.ArtistId = ar.ArtistId;
+
+ 
+--Solution
+SELECT 
+UPPER(SUBSTR(TRIM(al.Title),1,10)) AS Title_10,
+UPPER(SUBSTR(TRIM(ar.Name),1,10)) AS Name_10,
+RANK() OVER(PARTITION BY al.AlbumId ORDER BY TrackId) AS Rank
+FROM tracks t
+JOIN albums al
+ON t.AlbumId = al.AlbumId
+JOIN artists ar
+ON al.ArtistId = ar.ArtistId;
+
+--CASE WHEN STATEMENTS
+--Categorize invoices into 'Small','Medium',and 'Large' based on the total amount
+SELECT InvoiceId,Total,
+CASE
+    WHEN Total<10 THEN "Small"
+    WHEN Total BETWEEN 10 AND 20 THEN "Medium"
+    ELSE "Large"
+    END AS InvoiceCategory
+FROM invoices;
+
+--Assign a status to customers based on the total amount spent (Bronze,Silver,Gold)
+SELECT CustomerId,
+    FirstName,
+    LastName,
+    SUM(Total) AS TotalSpent,
+CASE
+    WHEN SUM(Total)<50 THEN "Bronze"
+    WHEN SUM(Total) BETWEEN 50 AND 100 THEN "Silver"
+    ELSE "Gold"
+    END AS CustomerStatus
+FROM customers c
+JOIN invoices i
+ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId;
+ 
+/*Label tracks as 'Short','Medium',or 'Long' based on duartion in Milliseconds (<180000'Short',
+180000-300000 'Medium',>300000'Long'*/
+SELECT TrackId,Name, Milliseconds,
+CASE
+WHEN Milliseconds< 180000 THEN 'Short'
+WHEN Milliseconds BETWEEN 180000 AND 300000 THEN 'Medium'
+ELSE 'Long'
+END AS Duration_Category
+FROM tracks;
+
+
+
+/*Label Tracks based on their media type as 'Purchased'(1),'Protected'(2),or 'Other'*/
+SELECT TrackId,Name,MediaTypeId,
+CASE 
+WHEN MediaTypeId =1 THEN 'Purchased'
+WHEN MediaTypeId =2 THEN 'Protected'
+ELSE 'Other'
+END AS TrackLabel
+FROM tracks;
+
+--COALESCE Function
+SELECT FirstName,LastName,COALESCE(Email,"No Email") AS ContactEmail
+FROM customers;
+
+--REPLACE Function
+SELECT FirstName,LastName,Email,REPLACE(Email,"@example.com","@domain.com") AS NewEmail 
+FROM customers;
+
+--DATE FUNCTION
+SELECT FirstName,LastName,BirthDate,DATE(BirthDate) AS NewBirthDate
+FROM employees;
+
+--STRFTIME Function
+SELECT FirstName,LastName,BirthDate,STRFTIME('%Y-%m-%d',BirthDate) AS FormattedBirthDate
+FROM employees;
+
+--ROUND Function
+SELECT InvoiceId,Total,ROUND(Total,1) AS RoundTotal
+FROM invoices;
+
+--STRFTIME Function
+SELECT FirstName,LastName,HireDate,
+DATE(HireDate) AS HireDate_F,
+STRFTIME('%Y',HireDate) AS HireYear,
+STRFTIME('%M',HireDate) AS HireMonth
+FROM employees;
+
+SELECT CustomerId,BillingState,COALESCE(BillingState,"No State") AS NewBillingState
+FROM invoices LIMIT 5;
+ 
+/*PRACTICE-SCENARIO 1*/
+--What is the average invoice total by customer?
+SELECT FirstName||' '||LastName AS FullName,ROUND(AVG(Total),1) AS AvgInvoiceTotal
+FROM  invoices i
+JOIN customers c
+ON i.CustomerId=c.CustomerId
+GROUP BY c.CustomerId
+ORDER BY AvgInvoiceTotal DESC;
+
+
+/*What are the top 10 customers with the most invoices*/
+SELECT FirstName||' '||LastName AS FullName,COUNT(InvoiceId) AS InvoiceCount
+FROM  invoices i
+JOIN customers c
+ON i.CustomerId=c.CustomerId
+GROUP BY c.CustomerId
+ORDER BY InvoiceCount DESC
+Limit 10;
+
+
+/*What are the top 10 customers by purchase amount ('Total' column*/
+SELECT FirstName||' '||LastName AS FullName,SUM(Total) AS PurchaseAmnt
+FROM  invoices i
+JOIN customers c
+ON i.CustomerId=c.CustomerId
+GROUP BY c.CustomerId
+ORDER BY PurchaseAmnt DESC
+Limit 10;
+
+
+/*What are the total sales by country--countries with most sales*/
+SELECT Country,ROUND(SUM(Total),2) AS Totalsales
+FROM  invoices i
+JOIN customers c
+ON i.CustomerId=c.CustomerId
+GROUP BY Country
+ORDER BY  Totalsales DESC
+Limit 10;
+
+
+
+/*PRACTICE-SCENARIO 2*/
+/*Use a CTE and calculate the total sales for each month in the year 2012
+Include the month and total sales amount(use STRFTIME)*/
+WITH MonthSales AS(
+  SELECT InvoiceDate,ROUND(SUM(Total),2) AS MonthlyTotal,
+  STRFTIME('%m', InvoiceDate) AS Month,
+  STRFTIME('%Y', InvoiceDate) AS Year
+FROM invoices
+WHERE STRFTIME('%Y', InvoiceDate) = '2012'
+GROUP BY Month
+ORDER BY  Month
+)
+
+SELECT *
+FROM MonthSales;
+
+
+/*Calculate the running total of sales for each customer 
+Include the customer name,invoice date,invoice total,
+and running total (Hint:use a window function)*/
+SELECT FirstName||' '||LastName AS FullName,InvoiceDate,Total,
+SUM(Total) OVER(PARTITION BY c.CustomerId ORDER BY InvoiceDate) AS RunningTotal
+FROM customers c
+JOIN invoices i
+ON c.CustomerId=i.CustomerId
+ORDER BY FullName,InvoiceDate;
+
+
+/*Identify the highest spending customer in each country 
+Include the country,customer name,and total spending
+Hint:Use 2 CTEs*/
+WITH CustomerSpending AS (
+SELECT c.CustomerId,FirstName||' '||LastName AS FullName,Country,SUM(Total) AS TotalSpending
+FROM customers c
+JOIN invoices i
+ON c.CustomerId = i.CustomerId
+GROUP BY c.CustomerId,Country),
+
+RankedSpending AS (
+SELECT FullName,Country,TotalSpending,
+RANK() OVER(PARTITION BY Country ORDER BY TotalSpending DESC) AS SpendingRank
+FROM CustomerSpending)
+
+SELECT FullName,Country,TotalSpending
+FROM RankedSpending
+WHERE SpendingRank=1;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
